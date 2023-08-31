@@ -16,6 +16,7 @@ export function App() {
 		useTransactionsByEmployee();
 	const [isLoading, setIsLoading] = useState(false);
 	const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
+	const [showViewMore, setShowViewMore] = useState(true);
 
 	const transactions = useMemo(
 		() => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
@@ -27,8 +28,16 @@ export function App() {
 	useEffect(() => {
 		if (transactions != null) {
 			setResults([...results, ...transactions]);
+			setShowViewMore(true);
 		}
-	}, [transactions]);
+		if (paginatedTransactions?.nextPage === null) {
+			setShowViewMore(false);
+		}
+		if (transactionsByEmployee != null) {
+			setResults(transactionsByEmployee);
+			setShowViewMore(false);
+		}
+	}, [transactions, transactionsByEmployee]);
 
 	const loadAllTransactions = useCallback(async () => {
 		setIsLoading(true);
@@ -76,9 +85,12 @@ export function App() {
 						if (newValue === null) {
 							return;
 						}
+						setResults([]);
+						setIsLoading(true);
 						newValue.id
 							? await loadTransactionsByEmployee(newValue.id)
 							: await loadAllTransactions();
+						setIsLoading(false);
 					}}
 				/>
 
@@ -87,7 +99,7 @@ export function App() {
 				<div className="RampGrid">
 					<Transactions transactions={results} isLoading={isLoading} />
 
-					{transactions !== null && (
+					{transactions !== null && showViewMore && (
 						<button
 							className="RampButton"
 							disabled={paginatedTransactionsUtils.loading}
