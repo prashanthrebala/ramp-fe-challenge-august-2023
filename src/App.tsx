@@ -87,7 +87,7 @@ export function App() {
 				<div className="RampBreak--l" />
 
 				<div className="RampGrid">
-					<Transactions transactions={results} />
+					<Transactions transactions={results} isLoading={isLoading} />
 
 					{transactions !== null && (
 						<button
