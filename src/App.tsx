@@ -6,7 +6,7 @@ import { useEmployees } from "./hooks/useEmployees";
 import { usePaginatedTransactions } from "./hooks/usePaginatedTransactions";
 import { useTransactionsByEmployee } from "./hooks/useTransactionsByEmployee";
 import { EMPTY_EMPLOYEE } from "./utils/constants";
-import { Employee } from "./utils/types";
+import { Employee, Transaction } from "./utils/types";
 
 export function App() {
 	const { data: employees, ...employeeUtils } = useEmployees();
@@ -20,6 +20,18 @@ export function App() {
 		() => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
 		[paginatedTransactions, transactionsByEmployee]
 	);
+
+	const [results, setResults] = useState([] as Transaction[]);
+
+	useEffect(() => {
+		if (transactions != null) {
+			setResults([...results, ...transactions]);
+		}
+	}, [transactions]);
+
+	useEffect(() => {
+		console.log("ISLOADING:", isLoading);
+	}, [isLoading]);
 
 	const loadAllTransactions = useCallback(async () => {
 		setIsLoading(true);
@@ -75,7 +87,7 @@ export function App() {
 				<div className="RampBreak--l" />
 
 				<div className="RampGrid">
-					<Transactions transactions={transactions} />
+					<Transactions transactions={results} />
 
 					{transactions !== null && (
 						<button
