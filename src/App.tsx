@@ -66,8 +66,9 @@ export function App() {
 						if (newValue === null) {
 							return;
 						}
-
-						await loadTransactionsByEmployee(newValue.id);
+						newValue.id
+							? await loadTransactionsByEmployee(newValue.id)
+							: await loadAllTransactions();
 					}}
 				/>
 
